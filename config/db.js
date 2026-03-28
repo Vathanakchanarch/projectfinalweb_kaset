@@ -7,8 +7,12 @@ const db = mysql.createPool({
   database: process.env.DB_NAME || "cyber_news_platform",
   port: Number(process.env.DB_PORT || 3306),
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
+  maxIdle: 5,
+  idleTimeout: 60000,
   queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 });
 
 export default db;
