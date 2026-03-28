@@ -16,35 +16,63 @@
 
     <form class="mt-14 space-y-8" action="/forgot/reset" method="POST">
       <div>
-        <label class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+        <label for="password" class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
           New Password
         </label>
         <input
+          id="password"
           type="password"
           name="password"
-          placeholder=". . . . . . ."
+          placeholder="At least 8 chars, upper, lower, number"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+          title="Password must be at least 8 characters and include uppercase, lowercase, and a number."
+          autocomplete="new-password"
           class="w-full rounded-lg bg-transparent border border-slate-700 px-6 py-5 text-lg text-slate-300 outline-none focus:border-cyan-400 transition"
           required
         />
+
+        <div class="mt-3">
+          <div class="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">
+            <span>Password Strength</span>
+            <span id="passwordStrengthText" class="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Enter password
+            </span>
+          </div>
+
+          <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+            <div
+              id="passwordStrengthBar"
+              class="h-full w-0 transition-all duration-300 bg-transparent"
+            ></div>
+          </div>
+
+          <p id="passwordHint" class="mt-3 text-sm text-slate-500 leading-6">
+            Use at least 8 characters with uppercase, lowercase, and a number.
+          </p>
+        </div>
       </div>
 
       <div>
-        <label class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+        <label for="confirmPassword" class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
           Confirm Password
         </label>
         <input
+          id="confirmPassword"
           type="password"
           name="confirmPassword"
-          placeholder=". . . . . . ."
+          placeholder="Repeat password"
+          autocomplete="new-password"
           class="w-full rounded-lg bg-transparent border border-slate-700 px-6 py-5 text-lg text-slate-300 outline-none focus:border-cyan-400 transition"
           required
         />
+
+        <p id="confirmMessage" class="mt-3 text-sm text-slate-500"></p>
       </div>
 
       <div class="flex justify-end">
         <button
           type="submit"
-          class="w-[180px] bg-cyan-500 text-black text-sm font-bold tracking-[0.3em] py-3 hover:bg-cyan-400 rounded-lg transition"
+          class="w-full sm:w-[180px] bg-cyan-500 text-black text-sm font-bold tracking-[0.3em] py-3 hover:bg-cyan-400 rounded-lg transition"
         >
           UPDATE
         </button>
@@ -52,3 +80,114 @@
     </form>
   </div>
 </div>
+
+<script>
+  const form = document.querySelector('form');
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const strengthText = document.getElementById('passwordStrengthText');
+  const strengthBar = document.getElementById('passwordStrengthBar');
+  const passwordHint = document.getElementById('passwordHint');
+  const confirmMessage = document.getElementById('confirmMessage');
+
+  function getPasswordStrength(password) {
+    let score = 0;
+
+    if (password.length >= 8) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (!password.length) {
+      return {
+        label: 'Enter password',
+        width: '0%',
+        barClass: 'bg-transparent',
+        textClass: 'text-slate-500',
+        hint: 'Use at least 8 characters with uppercase, lowercase, and a number.'
+      };
+    }
+
+    if (score <= 2) {
+      return {
+        label: 'Weak',
+        width: '33%',
+        barClass: 'bg-red-500',
+        textClass: 'text-red-400',
+        hint: 'Weak password. Add more length, uppercase, lowercase, and numbers.'
+      };
+    }
+
+    if (score <= 4) {
+      return {
+        label: 'Medium',
+        width: '66%',
+        barClass: 'bg-yellow-400',
+        textClass: 'text-yellow-300',
+        hint: 'Medium password. Add more complexity for better security.'
+      };
+    }
+
+    return {
+      label: 'Strong',
+      width: '100%',
+      barClass: 'bg-green-500',
+      textClass: 'text-green-400',
+      hint: 'Strong password.'
+    };
+  }
+
+  function updateConfirmMessage() {
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (!confirmPassword) {
+      confirmMessage.textContent = '';
+      confirmMessage.className = 'mt-3 text-sm text-slate-500';
+      return true;
+    }
+
+    if (password === confirmPassword) {
+      confirmMessage.textContent = 'Passwords match';
+      confirmMessage.className = 'mt-3 text-sm text-green-400';
+      return true;
+    } else {
+      confirmMessage.textContent = 'Passwords do not match';
+      confirmMessage.className = 'mt-3 text-sm text-red-400';
+      return false;
+    }
+  }
+
+  function updateStrength() {
+    const password = passwordInput.value;
+    const result = getPasswordStrength(password);
+
+    strengthText.textContent = result.label;
+    strengthText.className = `text-xs uppercase tracking-[0.2em] ${result.textClass}`;
+    strengthBar.className = `h-full transition-all duration-300 ${result.barClass}`;
+    strengthBar.style.width = result.width;
+    passwordHint.textContent = result.hint;
+    passwordHint.className = `mt-3 text-sm leading-6 ${result.textClass}`;
+
+    updateConfirmMessage();
+  }
+
+  passwordInput.addEventListener('input', updateStrength);
+  confirmPasswordInput.addEventListener('input', updateConfirmMessage);
+
+  form.addEventListener('submit', function (e) {
+    const matched = updateConfirmMessage();
+
+    if (!passwordInput.checkValidity()) {
+      passwordInput.reportValidity();
+      e.preventDefault();
+      return;
+    }
+
+    if (!matched) {
+      e.preventDefault();
+      confirmPasswordInput.focus();
+    }
+  });
+</script>
