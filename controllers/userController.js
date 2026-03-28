@@ -402,6 +402,15 @@ export async function postResetPassword(req, res) {
       });
     }
 
+    if (!isMediumStrongPassword(password)) {
+      return res.status(400).render('auth/forgotReset', {
+        title: 'Reset Password',
+        email: req.session.resetEmail,
+        error: 'Password must be at least 8 characters and include uppercase, lowercase, and a number.',
+        hideFooter: true
+      });
+    }
+
     if (password !== confirmPassword) {
       return res.status(400).render('auth/forgotReset', {
         title: 'Reset Password',
