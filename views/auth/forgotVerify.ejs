@@ -1,0 +1,45 @@
+<div class="flex flex-1 items-center justify-center min-h-screen px-6 py-12 bg-black">
+  <div class="w-full max-w-[600px] border border-slate-800 p-12 md:p-16 bg-[#030b18] rounded-2xl text-gray-400 shadow-2xl shadow-black/40">
+    <h1 class="text-5xl font-extrabold tracking-tight text-white">
+      OTP Verification
+    </h1>
+
+    <p class="text-sm tracking-[0.1em] text-slate-500 mt-4 uppercase">
+      // Enter the OTP sent to <%= email %>
+    </p>
+
+    <% if (error) { %>
+      <div class="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form class="mt-14 space-y-10" action="/forgot/verify" method="POST">
+      <div>
+        <label for="code" class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+          Enter the Code
+        </label>
+
+        <input
+          id="code"
+          name="code"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="Enter the 6-digit OTP"
+          class="w-full rounded-lg bg-transparent border border-slate-700 px-6 py-5 text-lg text-slate-300 outline-none focus:border-cyan-400 transition"
+          required
+        />
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="w-[150px] bg-cyan-500 text-black text-sm font-bold tracking-[0.35em] py-3 hover:bg-cyan-400 rounded-lg transition"
+        >
+          NEXT
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KASET Reporter</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+
+    <style>
+      .EasyMDEContainer {
+        color: #e5e7eb;
+      }
+      .EasyMDEContainer .CodeMirror {
+        background: #050a12;
+        color: #f8fafc;
+        border: 1px solid #334155;
+        min-height: 320px;
+        font-size: 15px;
+      }
+      .EasyMDEContainer .CodeMirror-cursor {
+        border-left: 1px solid #f8fafc;
+      }
+      .EasyMDEContainer .CodeMirror-selected {
+        background: rgba(34, 211, 238, 0.18) !important;
+      }
+      .EasyMDEContainer .editor-toolbar {
+        background: #0a111c;
+        border: 1px solid #334155;
+      }
+      .EasyMDEContainer .editor-toolbar button {
+        color: #cbd5e1 !important;
+      }
+      .EasyMDEContainer .editor-toolbar button:hover,
+      .EasyMDEContainer .editor-toolbar button.active {
+        background: #0f172a;
+        border-color: #22d3ee;
+      }
+      .EasyMDEContainer .editor-preview,
+      .EasyMDEContainer .editor-preview-side {
+        background: #050a12;
+        color: #e5e7eb;
+      }
+      .EasyMDEContainer .editor-statusbar {
+        color: #94a3b8;
+      }
+      .EasyMDEContainer .CodeMirror,
+      .EasyMDEContainer .CodeMirror-scroll {
+        min-height: 320px;
+      }
+      .EasyMDEContainer .CodeMirror-lines {
+        padding: 14px 0;
+      }
+      .EasyMDEContainer .cm-header {
+        color: #67e8f9;
+      }
+      .EasyMDEContainer .cm-strong {
+        color: #ffffff;
+      }
+      .EasyMDEContainer .cm-link {
+        color: #22d3ee;
+      }
+      .EasyMDEContainer .cm-quote {
+        color: #94a3b8;
+      }
+      .EasyMDEContainer .cm-variable-2,
+      .EasyMDEContainer .cm-variable-3 {
+        color: #e2e8f0;
+      }
+      .font-mono-tech {
+        font-family: "Share Tech Mono", monospace;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#060b12] text-gray-200 min-h-screen">
+    <div class="flex justify-between items-center bg-[#0a111c] border-b border-gray-800 px-8 h-[60px]">
+      <div class="text-xl font-bold tracking-wide">
+        <span class="text-white">KASET-</span>
+        <span class="text-cyan-400">NEWS</span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a
+          href="/"
+          class="font-mono-tech text-[11px] tracking-widest text-[#444] hover:text-cyan-400 transition-colors"
+        >
+          HOME
+        </a>
+
+        <a
+          href="/logout"
+          class="font-mono-tech text-[11px] tracking-widest text-cyan-400 border border-[#006e7a] px-4 py-1 hover:bg-cyan-400 hover:text-black transition-all"
+        >
+          LOGOUT
+        </a>
+      </div>
+    </div>
+
+    <div class="flex">
+      <div class="w-[220px] min-h-screen bg-[#070d17] border-r border-gray-800 pt-6">
+        <a
+          class="block px-6 py-3 text-cyan-400 bg-[#0e1826]"
+          href="/articles/create"
+        >
+          Write Article
+        </a>
+      </div>
+
+      <div class="flex-1 p-10">
+        <div class="max-w-[880px]">
+          <div class="flex items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">
+                Write New Article
+              </h1>
+              <p class="text-sm tracking-[0.18em] text-slate-500 uppercase">
+                // publish content to the website
+              </p>
+            </div>
+          </div>
+
+          <% if (error) { %>
+            <div class="mb-6 border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 rounded-lg">
+              <%= error %>
+            </div>
+          <% } %>
+
+          <% if (success) { %>
+            <div class="mb-6 border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300 rounded-lg flex items-center justify-between gap-4">
+              <span><%= success %></span>
+              <a
+                href="/"
+                class="text-cyan-300 hover:text-cyan-200 underline underline-offset-4"
+              >
+                View on website
+              </a>
+            </div>
+          <% } %>
+
+          <div class="bg-[#0a111c] border border-slate-800 p-8 rounded-2xl shadow-2xl">
+            <form class="space-y-6" action="/articles/create" method="POST">
+              <div>
+                <label class="block text-base text-slate-200 mb-2 font-semibold">
+                  Article Title
+                </label>
+                <input
+                  name="title"
+                  class="w-full bg-[#050a12] border border-slate-700 px-4 py-4 text-lg text-white placeholder:text-slate-500 outline-none rounded-lg focus:border-cyan-400 transition"
+                  type="text"
+                  value="<%= formData?.title || '' %>"
+                  placeholder="Enter article title"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-base text-slate-200 mb-2 font-semibold">
+                  Category
+                </label>
+                <select
+                  class="w-full bg-[#050a12] border border-slate-700 px-4 py-4 text-lg text-white outline-none rounded-lg focus:border-cyan-400 transition"
+                  name="categorySlug"
+                  required
+                >
+                  <option value="" class="text-slate-500">Select category</option>
+                  <option value="national" <%= formData?.categorySlug === 'national' ? 'selected' : '' %>>
+                    National
+                  </option>
+                  <option value="international" <%= formData?.categorySlug === 'international' ? 'selected' : '' %>>
+                    International
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-base text-slate-200 mb-2 font-semibold">
+                  Article Content (Markdown)
+                </label>
+                <p class="text-sm text-slate-500 mb-3">
+                  You can use headings, bold text, lists, links, and quotes.
+                </p>
+                <textarea id="markdown-editor" name="content" required><%= formData?.content || '' %></textarea>
+              </div>
+
+              <div class="pt-2 flex items-center gap-3">
+                <button
+                  type="submit"
+                  class="bg-cyan-500 text-black px-6 py-3 rounded-lg font-bold tracking-[0.16em] hover:bg-cyan-400 transition"
+                >
+                  Publish
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      new EasyMDE({
+        element: document.getElementById('markdown-editor'),
+        spellChecker: false,
+        status: ['lines', 'words'],
+        autofocus: false,
+        forceSync: true,
+        placeholder: `# Article title
+
+Write in Markdown here...
+
+## Subtitle
+
+**Bold**
+*Italic*
+
+- Point one
+- Point two
+
+> Quote
+
+[Link](https://example.com)`,
+        toolbar: [
+          'bold',
+          'italic',
+          'heading',
+          '|',
+          'quote',
+          'unordered-list',
+          'ordered-list',
+          '|',
+          'link',
+          'preview',
+          'side-by-side',
+          'fullscreen'
+        ]
+      });
+    </script>
+  </body>
+</html>

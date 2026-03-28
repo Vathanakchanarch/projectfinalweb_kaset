@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kaset-News Admin · Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body { font-family: "Rajdhani", sans-serif; }
+      .font-mono-tech { font-family: "Share Tech Mono", monospace; }
+      .font-orbitron { font-family: "Orbitron", monospace; }
+    </style>
+  </head>
+  <body class="bg-[#080808] text-gray-400 min-h-screen">
+    <nav class="fixed top-0 left-0 right-0 h-[50px] bg-[#040404] border-b border-[#252525] flex items-center px-6 z-50">
+      <div class="flex items-center gap-4">
+        <button
+          id="toggleSidebarBtn"
+          type="button"
+          class="font-mono-tech text-[14px] text-cyan-400 hover:text-white transition-colors"
+        >
+          ☰
+        </button>
+
+        <span class="font-orbitron text-sm font-black text-white tracking-widest">
+          KASET-NEWS
+        </span>
+      </div>
+
+      <div class="flex gap-7 flex-1 ml-10">
+        <a href="/" class="font-mono-tech text-[11px] tracking-widest text-[#444] hover:text-cyan-400 transition-colors">
+          HOME
+        </a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a
+          href="/create"
+          class="font-mono-tech text-[11px] tracking-widest text-green-400 border border-green-400/40 px-4 py-1 hover:bg-green-400 hover:text-black transition-all"
+        >
+          REGISTER
+        </a>
+        <a
+          href="/logout"
+          class="font-mono-tech text-[11px] tracking-widest text-cyan-400 border border-[#006e7a] px-4 py-1 hover:bg-cyan-400 hover:text-black transition-all"
+        >
+          LOGOUT
+        </a>
+      </div>
+    </nav>
+
+    <div class="flex pt-[50px] min-h-screen">
+      <aside
+        id="sidebar"
+        class="w-[180px] bg-[#0f0f0f] border-r border-[#1c1c1c] fixed top-[50px] left-0 bottom-0 flex flex-col transition-all duration-300"
+      >
+        <div class="px-4 py-5 border-b border-[#1c1c1c] flex flex-col gap-1">
+          <span class="font-mono-tech text-[8px] tracking-widest text-[#444]">
+            LOGGED IN AS
+          </span>
+          <span class="text-[11px] text-white break-all">
+            <%= admin.email %>
+          </span>
+          <span class="font-mono-tech text-[9px] tracking-wider text-cyan-400">
+            ADMINISTRATOR
+          </span>
+        </div>
+
+        <nav class="flex flex-col py-3 flex-1">
+          <a
+            href="/admin"
+            class="flex items-center gap-2 px-4 py-[10px] font-mono-tech text-[11px] tracking-widest text-left w-full border-l-2 border-cyan-400 bg-cyan-400/5 text-cyan-400 transition-all"
+          >
+            <span class="text-[9px]">◆</span> OVERVIEW
+          </a>
+
+          <a
+            href="/admin/users"
+            class="flex items-center gap-2 px-4 py-[10px] font-mono-tech text-[11px] tracking-widest text-left w-full border-l-2 border-transparent text-[#444] hover:text-white hover:bg-[#151515] transition-all"
+          >
+            <span class="text-[9px]">▣</span> USERS
+          </a>
+        </nav>
+
+        <a
+          href="/"
+          class="px-4 py-[10px] font-mono-tech text-[9px] tracking-wider text-[#444] border-t border-[#1c1c1c] hover:text-white transition-colors"
+        >
+          ← BACK TO SITE
+        </a>
+      </aside>
+
+      <main id="mainContent" class="ml-[180px] flex-1 p-10 transition-all duration-300">
+        <h1 class="font-orbitron text-2xl font-bold text-white tracking-wider mb-1">
+          Dashboard Overview
+        </h1>
+
+        <p class="font-mono-tech text-[10px] text-[#444] tracking-wider mb-8">
+          // KASET-NEWS ADMIN ·
+          <%= new Date().toLocaleDateString('en-US', {
+            month: 'long',
+            day: '2-digit',
+            year: 'numeric'
+          }).toUpperCase() %>
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 mb-10 max-w-lg">
+          <div class="bg-[#0f0f0f] border border-[#252525] p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-cyan-400"></div>
+            <div class="font-mono-tech text-[11px] text-[#444] tracking-widest uppercase mb-2">
+              Total Articles
+            </div>
+            <div class="font-orbitron text-4xl font-black text-cyan-400 leading-none">
+              <%= totalArticles %>
+            </div>
+          </div>
+
+          <div class="bg-[#0f0f0f] border border-[#252525] p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-green-400"></div>
+            <div class="font-mono-tech text-[11px] text-[#444] tracking-widest uppercase mb-2">
+              Total Users
+            </div>
+            <div class="font-orbitron text-4xl font-black text-green-400 leading-none">
+              <%= totalUsers %>
+            </div>
+          </div>
+        </div>
+
+        <p class="font-mono-tech text-[10px] tracking-widest text-[#444] uppercase border-b border-[#252525] pb-2 mb-0">
+          <span class="text-cyan-400">//</span> Recent Activity
+        </p>
+
+        <div class="bg-[#0f0f0f] border border-[#1c1c1c] mb-10 overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-[#151515] border-b border-[#252525]">
+                <th class="px-4 py-3 text-left font-mono-tech text-[9px] tracking-widest text-[#444] uppercase whitespace-nowrap">
+                  Time (Login)
+                </th>
+                <th class="px-4 py-3 text-left font-mono-tech text-[9px] tracking-widest text-[#444] uppercase">
+                  Username
+                </th>
+                <th class="px-4 py-3 text-left font-mono-tech text-[9px] tracking-widest text-[#444] uppercase">
+                  News Title
+                </th>
+                <th class="px-4 py-3 text-left font-mono-tech text-[9px] tracking-widest text-[#444] uppercase">
+                  Action
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% if (recentActivities && recentActivities.length > 0) { %>
+                <% recentActivities.forEach(activity => { %>
+                  <tr class="border-b border-[#1c1c1c] hover:bg-white/[0.02] transition-colors">
+                    <td class="px-4 py-3 font-mono-tech text-[11px] text-[#444] whitespace-nowrap">
+                      <%= activity.time %>
+                    </td>
+
+                    <td class="px-4 py-3 font-mono-tech text-[11px] text-[#006e7a]">
+                      <%= activity.username %>
+                    </td>
+
+                    <td class="px-4 py-3 text-[13px] text-white font-semibold">
+                      <%= activity.title || '—' %>
+                    </td>
+
+                    <td class="px-4 py-3">
+                      <% if (activity.id) { %>
+                        <button
+                          type="button"
+                          class="delete-article-btn px-3 py-1 bg-transparent border border-red-500/30 text-red-500 font-mono-tech text-[9px] tracking-widest uppercase hover:bg-red-500/10 hover:border-red-500 transition-all cursor-pointer"
+                          data-article-id="<%= activity.id %>"
+                          data-article-title="<%= activity.title || 'this article' %>"
+                        >
+                          DELETE
+                        </button>
+                      <% } else { %>
+                        <span class="font-mono-tech text-[10px] text-[#444]">—</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="4" class="px-4 py-8 text-center font-mono-tech text-[10px] text-[#444] tracking-widest">
+                    // NO RECENT ACTIVITY
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <div
+      id="deleteArticleModal"
+      class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[100]"
+    >
+      <div class="w-full max-w-md mx-4 bg-[#111111] border border-red-500/30 rounded-lg shadow-2xl overflow-hidden">
+        <div class="flex items-start gap-3 p-5 border-b border-[#252525]">
+          <div class="mt-0.5 text-red-400 text-lg">⚠</div>
+          <div class="flex-1">
+            <h2 class="text-red-400 font-semibold text-base">
+              Delete article?
+            </h2>
+            <p class="mt-2 text-sm text-gray-300 leading-6">
+              This will permanently delete
+              <span id="modalArticleTitle" class="text-white font-semibold"></span>.
+            </p>
+          </div>
+          <button
+            id="closeDeleteArticleModalBtn"
+            type="button"
+            class="text-[#666] hover:text-white text-lg leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="flex justify-end gap-3 p-4 bg-[#0c0c0c]">
+          <button
+            id="cancelDeleteArticleBtn"
+            type="button"
+            class="px-4 py-2 text-sm rounded border border-[#3a3a3a] text-gray-300 hover:bg-[#1a1a1a] transition"
+          >
+            Cancel
+          </button>
+
+          <form id="deleteArticleForm" method="POST" action="">
+            <button
+              type="submit"
+              class="px-4 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-500 transition"
+            >
+              Yes, delete article
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const deleteArticleModal = document.getElementById('deleteArticleModal');
+      const modalArticleTitle = document.getElementById('modalArticleTitle');
+      const deleteArticleForm = document.getElementById('deleteArticleForm');
+      const closeDeleteArticleModalBtn = document.getElementById('closeDeleteArticleModalBtn');
+      const cancelDeleteArticleBtn = document.getElementById('cancelDeleteArticleBtn');
+      const deleteArticleButtons = document.querySelectorAll('.delete-article-btn');
+
+      function openDeleteArticleModal(articleId, articleTitle) {
+        modalArticleTitle.textContent = articleTitle;
+        deleteArticleForm.action = `/articles/delete/${articleId}`;
+        deleteArticleModal.classList.remove('hidden');
+        deleteArticleModal.classList.add('flex');
+      }
+
+      function closeDeleteArticleModal() {
+        deleteArticleModal.classList.add('hidden');
+        deleteArticleModal.classList.remove('flex');
+        deleteArticleForm.action = '';
+        modalArticleTitle.textContent = '';
+      }
+
+      deleteArticleButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          openDeleteArticleModal(btn.dataset.articleId, btn.dataset.articleTitle);
+        });
+      });
+
+      closeDeleteArticleModalBtn.addEventListener('click', closeDeleteArticleModal);
+      cancelDeleteArticleBtn.addEventListener('click', closeDeleteArticleModal);
+
+      deleteArticleModal.addEventListener('click', (e) => {
+        if (e.target === deleteArticleModal) closeDeleteArticleModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !deleteArticleModal.classList.contains('hidden')) {
+          closeDeleteArticleModal();
+        }
+      });
+
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+      const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+
+      let sidebarOpen = true;
+
+      toggleSidebarBtn.addEventListener('click', () => {
+        sidebarOpen = !sidebarOpen;
+
+        if (sidebarOpen) {
+          sidebar.classList.remove('-translate-x-full');
+          sidebar.classList.add('translate-x-0');
+          mainContent.classList.remove('ml-0');
+          mainContent.classList.add('ml-[180px]');
+        } else {
+          sidebar.classList.remove('translate-x-0');
+          sidebar.classList.add('-translate-x-full');
+          mainContent.classList.remove('ml-[180px]');
+          mainContent.classList.add('ml-0');
+        }
+      });
+    </script>
+  </body>
+</html>

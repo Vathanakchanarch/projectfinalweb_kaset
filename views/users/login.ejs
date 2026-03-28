@@ -1,0 +1,66 @@
+<div class="flex flex-1 items-center justify-center min-h-screen px-6 py-12 bg-black">
+  <div class="w-full max-w-[650px] border border-slate-800 p-12 md:p-16 bg-[#030b18] rounded-2xl shadow-2xl shadow-black/40">
+    <div class="mb-10">
+      <h1 class="text-5xl font-extrabold tracking-tight">
+        <span class="text-white">KASET-</span>
+        <span class="text-cyan-400">NEWS</span>
+      </h1>
+
+      <p class="text-sm tracking-[0.2em] text-slate-500 mt-4 uppercase">
+        // Sign in to your account
+      </p>
+    </div>
+
+    <% if (error) { %>
+      <div class="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form class="mt-10 space-y-8" action="/login" method="POST">
+      <div>
+        <label for="email" class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+          Email Address
+        </label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="you@kasetnews.com"
+          value="<%= email || '' %>"
+          class="w-full rounded-lg bg-transparent border border-slate-700 px-6 py-5 text-lg text-slate-300 outline-none focus:border-cyan-400 transition"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+          Password
+        </label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder=". . . . . . ."
+          class="w-full bg-transparent rounded-lg border border-slate-700 px-5 py-4 text-sm text-slate-300 outline-none focus:border-cyan-400 transition"
+          required
+        />
+
+        <a href="/forgot" class="text-sm text-cyan-400 hover:underline tracking-wider mt-3 block text-right">
+          Forgot password?
+        </a>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-cyan-500 text-black text-sm font-bold tracking-[0.3em] py-4 hover:bg-cyan-400 rounded-lg transition"
+      >
+        SIGN IN
+      </button>
+    </form>
+  </div>
+</div>

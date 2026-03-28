@@ -1,0 +1,54 @@
+<div class="flex flex-1 items-center justify-center min-h-screen px-6 py-12 bg-black">
+  <div class="w-full max-w-[600px] border border-slate-800 p-12 md:p-16 bg-[#030b18] rounded-2xl text-gray-400 shadow-2xl shadow-black/40">
+    <h1 class="text-5xl font-extrabold tracking-tight text-white">
+      Reset Password
+    </h1>
+
+    <p class="text-sm tracking-[0.1em] text-slate-500 mt-4 uppercase">
+      // Set a new password for <%= email %>
+    </p>
+
+    <% if (error) { %>
+      <div class="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form class="mt-14 space-y-8" action="/forgot/reset" method="POST">
+      <div>
+        <label class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+          New Password
+        </label>
+        <input
+          type="password"
+          name="password"
+          placeholder=". . . . . . ."
+          class="w-full rounded-lg bg-transparent border border-slate-700 px-6 py-5 text-lg text-slate-300 outline-none focus:border-cyan-400 transition"
+          required
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm tracking-[0.3em] text-slate-500 mb-4 uppercase">
+          Confirm Password
+        </label>
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder=". . . . . . ."
+          class="w-full rounded-lg bg-transparent border border-slate-700 px-6 py-5 text-lg text-slate-300 outline-none focus:border-cyan-400 transition"
+          required
+        />
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="w-[180px] bg-cyan-500 text-black text-sm font-bold tracking-[0.3em] py-3 hover:bg-cyan-400 rounded-lg transition"
+        >
+          UPDATE
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

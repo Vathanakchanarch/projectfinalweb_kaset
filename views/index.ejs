@@ -1,0 +1,310 @@
+<div class="min-h-[80vh] bg-black text-slate-300">
+  <div class="w-full border-b border-slate-800 bg-[#030b18]/95 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="/" class="text-2xl font-extrabold tracking-tight">
+        <span class="text-white">KASET-</span>
+        <span class="text-cyan-400">NEWS</span>
+      </a>
+
+      <div class="flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.2em]">
+        <a href="/" class="text-cyan-400 border-b border-cyan-400 pb-1">
+          Dashboard
+        </a>
+
+        <% if (userRole === 'editor') { %>
+          <a href="/articles/create" class="text-slate-500 hover:text-white transition-colors">
+            Create Article
+          </a>
+        <% } %>
+
+        <% if (userRole === 'admin') { %>
+          <a href="/admin" class="text-slate-500 hover:text-white transition-colors">
+            Admin
+          </a>
+        <% } %>
+
+        <% if (userName) { %>
+          <span class="text-slate-500">|</span>
+          <span class="text-cyan-400">Hello, <%= userName %></span>
+          <a href="/logout" class="text-slate-500 hover:text-white transition-colors">
+            Logout
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+      <div class="flex items-center gap-3 flex-wrap">
+        <a
+          href="/<% if (q) { %>?q=<%= encodeURIComponent(q) %><% } %>"
+          class="px-4 py-2 rounded-lg border text-sm font-semibold transition
+          <%= !category ? 'border-cyan-400 text-cyan-400 bg-cyan-400/10' : 'border-slate-700 text-slate-400 hover:text-white hover:border-slate-500' %>"
+        >
+          All
+        </a>
+
+        <a
+          href="/?category=national<% if (q) { %>&q=<%= encodeURIComponent(q) %><% } %>"
+          class="px-4 py-2 rounded-lg border text-sm font-semibold transition
+          <%= category === 'national' ? 'border-cyan-400 text-cyan-400 bg-cyan-400/10' : 'border-slate-700 text-slate-400 hover:text-white hover:border-slate-500' %>"
+        >
+          National
+        </a>
+
+        <a
+          href="/?category=international<% if (q) { %>&q=<%= encodeURIComponent(q) %><% } %>"
+          class="px-4 py-2 rounded-lg border text-sm font-semibold transition
+          <%= category === 'international' ? 'border-cyan-400 text-cyan-400 bg-cyan-400/10' : 'border-slate-700 text-slate-400 hover:text-white hover:border-slate-500' %>"
+        >
+          International
+        </a>
+      </div>
+
+      <form action="/" method="GET" class="flex items-center gap-3">
+        <% if (category) { %>
+          <input type="hidden" name="category" value="<%= category %>" />
+        <% } %>
+
+        <input
+          type="text"
+          name="q"
+          value="<%= q || '' %>"
+          placeholder="Search title or content..."
+          class="w-[300px] rounded-lg bg-[#030b18] border border-slate-700 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400 transition"
+        />
+
+        <button
+          type="submit"
+          class="rounded-lg bg-cyan-500 text-black px-5 py-3 text-sm font-bold tracking-[0.15em] hover:bg-cyan-400 transition"
+        >
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 pb-16">
+    <% if (!articles || !articles.length) { %>
+      <div class="rounded-xl border border-slate-800 bg-[#030b18] p-6 text-slate-400">
+        No articles found.
+      </div>
+    <% } else { %>
+      <div id="articleGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <% articles.forEach(a => { %>
+          <div class="rounded-2xl border border-slate-800 bg-[#030b18] p-7 shadow-lg shadow-black/20">
+            <div class="flex items-center justify-between gap-4 mb-5">
+              <span class="inline-flex items-center rounded-full border border-slate-600 px-4 py-1 text-sm text-white">
+                <%= a.category_name || 'Uncategorized' %>
+              </span>
+
+              <span class="text-sm text-slate-500">
+                <%= a.published_at ? new Date(a.published_at).toLocaleString() : '' %>
+              </span>
+            </div>
+
+            <h2 class="text-3xl font-extrabold text-white leading-tight mb-4">
+              <%= a.title %>
+            </h2>
+
+            <p class="text-[17px] leading-8 text-slate-400 mb-6">
+              <%
+                const txt = a.content_preview || '';
+                const preview = txt.length > 180 ? txt.substring(0, 180) + '…' : txt;
+              %>
+              <%= preview %>
+            </p>
+
+            <div class="flex items-center justify-end">
+              <a
+                href="/articles/<%= a.article_id %>"
+                class="text-cyan-400 hover:text-cyan-300 font-medium"
+              >
+                Read more
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="mt-10 flex flex-col items-center gap-4">
+        <button
+          id="seeMoreBtn"
+          type="button"
+          class="<%= hasMore ? '' : 'hidden' %> rounded-lg border border-slate-700 px-6 py-3 text-sm font-bold tracking-[0.15em] text-slate-300 hover:text-white hover:border-cyan-400 hover:bg-cyan-400/10 transition"
+        >
+          See more
+        </button>
+
+        <div
+          id="loadMoreStatus"
+          class="text-sm text-slate-500 <%= hasMore ? '' : 'hidden' %>"
+        >
+          Or scroll to load more articles...
+        </div>
+
+        <div
+          id="loadMoreSentinel"
+          class="h-10 w-full"
+          data-page="1"
+          data-has-more="<%= hasMore ? 'true' : 'false' %>"
+          data-category="<%= category || '' %>"
+          data-q="<%= q || '' %>"
+        ></div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  const articleGrid = document.getElementById('articleGrid');
+  const sentinel = document.getElementById('loadMoreSentinel');
+  const loadMoreStatus = document.getElementById('loadMoreStatus');
+  const seeMoreBtn = document.getElementById('seeMoreBtn');
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatPreview(content) {
+    const txt = String(content || '');
+    return txt.length > 180 ? `${txt.substring(0, 180)}…` : txt;
+  }
+
+  function formatDate(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleString();
+  }
+
+  function createArticleCard(article) {
+    return `
+      <div class="rounded-2xl border border-slate-800 bg-[#030b18] p-7 shadow-lg shadow-black/20">
+        <div class="flex items-center justify-between gap-4 mb-5">
+          <span class="inline-flex items-center rounded-full border border-slate-600 px-4 py-1 text-sm text-white">
+            ${escapeHtml(article.category_name || 'Uncategorized')}
+          </span>
+
+          <span class="text-sm text-slate-500">
+            ${escapeHtml(formatDate(article.published_at))}
+          </span>
+        </div>
+
+        <h2 class="text-3xl font-extrabold text-white leading-tight mb-4">
+          ${escapeHtml(article.title)}
+        </h2>
+
+        <p class="text-[17px] leading-8 text-slate-400 mb-6">
+          ${escapeHtml(formatPreview(article.content_preview))}
+        </p>
+
+        <div class="flex items-center justify-end">
+          <a
+            href="/articles/${encodeURIComponent(article.article_id)}"
+            class="text-cyan-400 hover:text-cyan-300 font-medium"
+          >
+            Read more
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  if (articleGrid && sentinel) {
+    let loading = false;
+
+    async function loadMoreArticles() {
+      const hasMore = sentinel.dataset.hasMore === 'true';
+      if (!hasMore || loading) return;
+
+      loading = true;
+
+      if (seeMoreBtn) {
+        seeMoreBtn.disabled = true;
+        seeMoreBtn.textContent = 'Loading...';
+      }
+
+      if (loadMoreStatus) {
+        loadMoreStatus.textContent = 'Loading more articles...';
+      }
+
+      try {
+        const nextPage = Number(sentinel.dataset.page || '1') + 1;
+        const params = new URLSearchParams();
+
+        params.set('page', String(nextPage));
+        if (sentinel.dataset.category) params.set('category', sentinel.dataset.category);
+        if (sentinel.dataset.q) params.set('q', sentinel.dataset.q);
+
+        const response = await fetch(`/dashboard/load-more?${params.toString()}`, {
+          headers: { Accept: 'application/json' }
+        });
+
+        if (!response.ok) throw new Error('Failed to load more articles');
+
+        const data = await response.json();
+
+        if (Array.isArray(data.articles) && data.articles.length) {
+          articleGrid.insertAdjacentHTML(
+            'beforeend',
+            data.articles.map(createArticleCard).join('')
+          );
+        }
+
+        sentinel.dataset.page = String(nextPage);
+        sentinel.dataset.hasMore = data.hasMore ? 'true' : 'false';
+
+        if (data.hasMore) {
+          if (seeMoreBtn) {
+            seeMoreBtn.disabled = false;
+            seeMoreBtn.textContent = 'See more';
+            seeMoreBtn.classList.remove('hidden');
+          }
+          if (loadMoreStatus) {
+            loadMoreStatus.textContent = 'Or scroll to load more articles...';
+            loadMoreStatus.classList.remove('hidden');
+          }
+        } else {
+          if (seeMoreBtn) seeMoreBtn.classList.add('hidden');
+          if (loadMoreStatus) loadMoreStatus.textContent = 'No more articles.';
+        }
+      } catch (error) {
+        console.error(error);
+        if (seeMoreBtn) {
+          seeMoreBtn.disabled = false;
+          seeMoreBtn.textContent = 'See more';
+        }
+        if (loadMoreStatus) {
+          loadMoreStatus.textContent = 'Could not load more articles.';
+        }
+      } finally {
+        loading = false;
+      }
+    }
+
+    if (seeMoreBtn) {
+      seeMoreBtn.addEventListener('click', loadMoreArticles);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) loadMoreArticles();
+      });
+    }, {
+      rootMargin: '250px 0px'
+    });
+
+    if (sentinel.dataset.hasMore === 'true') {
+      observer.observe(sentinel);
+    } else {
+      if (seeMoreBtn) seeMoreBtn.classList.add('hidden');
+      if (loadMoreStatus) loadMoreStatus.classList.add('hidden');
+    }
+  }
+</script>

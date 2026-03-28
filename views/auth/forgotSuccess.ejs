@@ -1,0 +1,26 @@
+<div class="flex flex-1 items-center justify-center min-h-screen px-6 py-12 bg-black">
+  <div class="w-full max-w-[600px] border border-slate-800 p-12 md:p-16 bg-[#030b18] rounded-2xl text-gray-400 text-center shadow-2xl shadow-black/40">
+    <h1 class="text-5xl font-extrabold tracking-tight text-white">
+      Successful
+    </h1>
+
+    <p class="text-sm tracking-[0.1em] text-slate-500 mt-4 uppercase">
+      // your password has been reset successfully
+    </p>
+
+    <% if (success) { %>
+      <div class="mt-8 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <div class="mt-10">
+      <a
+        href="/login"
+        class="inline-block w-[200px] bg-cyan-500 text-black text-sm font-bold tracking-[0.3em] py-3 hover:bg-cyan-400 rounded-lg transition"
+      >
+        GO TO LOGIN
+      </a>
+    </div>
+  </div>
+</div>
