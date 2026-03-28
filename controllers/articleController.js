@@ -2,11 +2,17 @@ import ArticleModel from '../models/articleModel.js';
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 
+marked.setOptions({
+  gfm: true,
+  breaks: true
+});
+
 function stripMarkdown(text = '') {
   return String(text)
     .replace(/!\[.*?\]\(.*?\)/g, '')
     .replace(/\[(.*?)\]\(.*?\)/g, '$1')
     .replace(/[`*_>#~-]/g, '')
+    .replace(/\|/g, ' ')
     .replace(/\n+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -129,12 +135,25 @@ export async function getArticleDetail(req, res) {
         'blockquote',
         'strong', 'b', 'em', 'i',
         'code', 'pre',
-        'a'
+        'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
+        'a', 'img'
       ],
       allowedAttributes: {
-        a: ['href', 'target', 'rel']
+        a: ['href', 'target', 'rel', 'title'],
+        img: ['src', 'alt', 'title'],
+        th: ['align'],
+        td: ['align']
       },
-      allowedSchemes: ['http', 'https', 'mailto']
+      allowedSchemes: ['http', 'https', 'mailto'],
+      allowedSchemesByTag: {
+        img: ['http', 'https']
+      },
+      transformTags: {
+        a: sanitizeHtml.simpleTransform('a', {
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        })
+      }
     });
 
     return res.render('articles/show', {
