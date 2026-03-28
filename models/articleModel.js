@@ -1,129 +1,40 @@
-import db from '../config/db.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
-class ArticleModel {
-  static async search({ categorySlug = null, term = null, limit = 4, offset = 0 } = {}) {
-    const whereParts = [`a.status = 'published'`];
-    const params = [];
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import expressLayouts from 'express-ejs-layouts';
 
-    if (categorySlug) {
-      whereParts.push('c.slug = ?');
-      params.push(categorySlug);
-    }
+import routes from './routes/index.js';
+import { sessionConfig } from './config/sessionConfig.js';
 
-    if (term && term.trim()) {
-      whereParts.push('(a.title LIKE ? OR a.content LIKE ?)');
-      params.push(`%${term}%`, `%${term}%`);
-    }
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    const where = `WHERE ${whereParts.join(' AND ')}`;
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(sessionConfig);
+app.use(express.static(path.join(__dirname, 'public')));
 
-    const sql = `
-      SELECT
-        a.article_id,
-        a.title,
-        a.content,
-        a.published_at,
-        c.name AS category_name,
-        c.slug AS category_slug
-      FROM articles a
-      LEFT JOIN categories c ON c.category_id = a.category_id
-      ${where}
-      ORDER BY a.published_at DESC, a.created_at DESC
-      LIMIT ? OFFSET ?;
-    `;
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-    params.push(Number(limit), Number(offset));
-    return db.execute(sql, params);
-  }
+app.use(expressLayouts);
+app.set('layout', 'templates/mains');
 
-  static async countSearch({ categorySlug = null, term = null } = {}) {
-    const whereParts = [`a.status = 'published'`];
-    const params = [];
+app.use((req, res, next) => {
+  res.locals.userName = req.session?.userName || null;
+  res.locals.userRole = req.session?.userRole || null;
+  res.locals.userEmail = req.session?.userEmail || null;
+  res.locals.hideFooter = false;
+  next();
+});
 
-    if (categorySlug) {
-      whereParts.push('c.slug = ?');
-      params.push(categorySlug);
-    }
+app.use('/', routes);
 
-    if (term && term.trim()) {
-      whereParts.push('(a.title LIKE ? OR a.content LIKE ?)');
-      params.push(`%${term}%`, `%${term}%`);
-    }
-
-    const where = `WHERE ${whereParts.join(' AND ')}`;
-
-    const sql = `
-      SELECT COUNT(*) AS total
-      FROM articles a
-      LEFT JOIN categories c ON c.category_id = a.category_id
-      ${where}
-    `;
-
-    return db.execute(sql, params);
-  }
-
-  static async getById(articleId) {
-    const sql = `
-      SELECT
-        a.article_id,
-        a.title,
-        a.content,
-        a.published_at,
-        a.created_at,
-        a.status,
-        c.name AS category_name,
-        c.slug AS category_slug,
-        u.full_name AS author_name
-      FROM articles a
-      LEFT JOIN categories c ON c.category_id = a.category_id
-      LEFT JOIN users u ON u.user_id = a.editor_id
-      WHERE a.article_id = ?
-        AND a.status = 'published'
-      LIMIT 1
-    `;
-    return db.execute(sql, [articleId]);
-  }
-
-  static async create({ title, content, categorySlug, editorId }) {
-    const sql = `
-      INSERT INTO articles (title, content, category_id, editor_id, status, published_at)
-      SELECT ?, ?, c.category_id, ?, 'published', NOW()
-      FROM categories c
-      WHERE c.slug = ?
-      LIMIT 1
-    `;
-    return db.execute(sql, [title, content, editorId, categorySlug]);
-  }
-
-  static async countAll() {
-    return db.execute(`
-      SELECT COUNT(*) AS totalArticles
-      FROM articles
-      WHERE status = 'published'
-    `);
-  }
-
-  static async getRecentActivities(limit = 10) {
-    return db.execute(
-      `
-      SELECT
-        a.article_id AS id,
-        u.full_name AS username,
-        a.title,
-        DATE_FORMAT(a.published_at, '%Y-%m-%d %H:%i:%s') AS time
-      FROM articles a
-      LEFT JOIN users u ON u.user_id = a.editor_id
-      WHERE a.status = 'published'
-      ORDER BY a.published_at DESC
-      LIMIT ?
-      `,
-      [Number(limit)]
-    );
-  }
-
-  static async deleteById(articleId) {
-    return db.execute(`DELETE FROM articles WHERE article_id = ?`, [articleId]);
-  }
-}
-
-export default ArticleModel;
+const PORT = process.env.PORT_APP || 4000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
